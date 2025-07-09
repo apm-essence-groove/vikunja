@@ -1,4 +1,4 @@
-# heroku.yml - The official instruction manual for Heroku
+# heroku.yml - The final instruction manual for Heroku
 
 build:
   docker:
@@ -8,6 +8,7 @@ build:
     VIKUNJA_BUILD_TARGET: web
     VIKUNJA_API_BUILD_TARGET: api
     BUILDPLATFORM: linux/amd64
+    RELEASE_VERSION: $HEROKU_SLUG_COMMIT # <-- The final fix
 
 run:
   web: npx serve -s /app/vikunja/frontend
