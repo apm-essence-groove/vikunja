@@ -7,6 +7,8 @@ build:
   config:
     VIKUNJA_BUILD_TARGET: web
     VIKUNJA_API_BUILD_TARGET: api
+    BUILDPLATFORM: linux/amd64 # <-- ADD THIS LINE
+
 run:
-  web: npx serve -s /app/vikunja/frontend # <-- The correct command for the web process
-  api: /app/vikunja/vikunja             # <-- The correct command for the api process
+  web: npx serve -s /app/vikunja/frontend
+  api: /app/vikunja/vikunja
