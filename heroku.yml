@@ -10,5 +10,5 @@ build:
     RELEASE_VERSION: $HEROKU_SLUG_COMMIT
 
 run:
-  web: npx serve -s /app/vikunja/frontend
-  api: /app/vikunja/vikunja
+web: npx serve -s /app/vikunja/frontend --listen $PORT
+api: /app/vikunja/vikunja
