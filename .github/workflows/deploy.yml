@@ -20,10 +20,12 @@ jobs:
       - name: Install Heroku CLI
         run: curl https://cli-assets.heroku.com/install.sh | sh
 
-      - name: Log in to Heroku
-        run: heroku login -i
+      # THIS STEP IS NEW AND REPLACES THE FAULTY 'heroku login -i'
+      # It logs into the Docker registry specifically, using the API key automatically.
+      - name: Log in to Heroku Container Registry
+        run: heroku container:login
 
-      # New step to ensure the app is configured for Docker deployments
+      # This step ensures the app is configured for Docker deployments
       - name: Set the App Stack to Container
         run: heroku stack:set container --app ${{ env.HEROKU_APP_NAME }}
 
