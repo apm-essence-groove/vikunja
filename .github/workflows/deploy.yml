@@ -1,4 +1,4 @@
-# The Final-Final Heroku Deployment Workflow
+# The Bedrock Heroku Deployment Workflow using Git
 name: Deploy to Heroku via Git
 
 on:
@@ -31,10 +31,6 @@ jobs:
 
       - name: Add Heroku remote
         run: heroku git:remote -a ${{ secrets.HEROKU_APP_NAME }}
-
-      # THIS IS THE CRITICAL NEW STEP
-      - name: Set API dyno to web type
-        run: heroku ps:type api=web -a ${{ secrets.HEROKU_APP_NAME }}
 
       - name: Push to Heroku to trigger build
         run: git push heroku HEAD:main --force
