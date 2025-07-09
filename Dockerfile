@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1@sha256:9857836c9ee4268391bb5b09f9f157f3c91bb15821bb77969642813b0d00518d
-FROM --platform=$BUILDPLATFORM node:22.17.0-alpine@sha256:10962e8568729b0cfd506170c5a2d1918a2c10ac08c0e6900180b4bac061adc9 AS frontendbuilder
+FROM node:22.17.0-alpine@sha256:10962e8568729b0cfd506170c5a2d1918a2c10ac08c0e6900180b4bac061adc9 AS frontendbuilder
 
 WORKDIR /build
 
@@ -16,7 +16,7 @@ RUN pnpm install --frozen-lockfile --offline
 COPY frontend/ ./
 RUN	pnpm run build
 
-FROM --platform=$BUILDPLATFORM ghcr.io/techknowlogick/xgo:go-1.23.x@sha256:55a8e62ff9e468ff6ca6e9ecb846f853273161fe90b688f94c67b34f88d658b7 AS apibuilder
+FROM golang:1.22.8-alpine@sha256:d808433434e7f975432929e0649733475c404889c3a37542d212753444e4337b AS apibuilder
 
 RUN go install github.com/magefile/mage@latest && \
     mv /go/bin/mage /usr/local/go/bin
