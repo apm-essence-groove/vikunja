@@ -1,14 +1,10 @@
-# The Complete and Final Heroku Deployment Workflow for Vikunja
+# New workflow to deploy using Heroku's native build system
 name: Deploy to Heroku
 
 on:
   push:
     branches:
       - 'apm-essense-groove-heroku'
-
-env:
-  HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-  HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 
 jobs:
   deploy:
@@ -18,34 +14,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Step 2: Install the Heroku Command Line Interface (CLI)
-      - name: Install Heroku CLI
-        run: curl https://cli-assets.heroku.com/install.sh | sh
-
-      # Step 3: Log in to Heroku's container registry
-      - name: Log in to Heroku Container Registry
-        run: heroku container:login
-
-      # Step 4: Set the app's stack to 'container' to accept Docker images
-      - name: Set the App Stack to Container
-        run: heroku stack:set container --app ${{ env.HEROKU_APP_NAME }}
-        
-      # Step 5: Build and push the 'api' (the kitchen)
-      - name: Build and push the API image
-        run: heroku container:push api --arg "VIKUNJA_BUILD_TARGET=api" --app ${{ env.HEROKU_APP_NAME }}
-        
-      # Step 6: Build and push the 'web' (the dining room)
-      - name: Build and push the WEB image
-        run: heroku container:push web --arg "VIKUNJA_BUILD_TARGET=web" --app ${{ env.HEROKU_APP_NAME }}
-
-      # Step 7: Set all the necessary environment variables for the app to run
-      - name: Set Heroku environment variables
-        run: |
-          heroku config:set VIKUNJA_DATABASE_TYPE=postgres --app ${{ env.HEROKU_APP_NAME }}
-          heroku config:set VIKUNJA_SERVICE_FRONTENDURL=https://${{ env.HEROKU_APP_NAME }}.herokuapp.com --app ${{ env.HEROKU_APP_NAME }}
-          heroku config:set VIKUNJA_API_URL=https://${{ env.HEROKU_APP_NAME }}.herokuapp.com/api/v1 --app ${{ env.HEROKU_APP_NAME }}
-          heroku config:set VIKUNJA_SERVICE_JWTSECRET=${{ secrets.VIKUNJA_SERVICE_JWTSECRET }} --app ${{ env.HEROKU_APP_NAME }}
-
-      # Step 8: Release both new images to run on Heroku
-      - name: Release new images
-        run: heroku container:release web api --app ${{ env.HEROKU_APP_NAME }}
+      # Step 2: Use the official Heroku Deploy action
+      # This action will push your source code to Heroku. Heroku will then
+      # find the heroku.yml file and take over the build and release process.
+      - name: Deploy to Heroku
+        uses: heroku/deploy@v7
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
