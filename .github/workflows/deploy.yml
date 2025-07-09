@@ -1,4 +1,4 @@
-# The Official Heroku Deployment Workflow for Docker
+# The Official Heroku Deployment Workflow - No Third-Party Dependencies
 name: Deploy to Heroku
 
 # Run this workflow every time a change is pushed to the 'main' branch
@@ -16,15 +16,14 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Check out the repository code
+      # Step 1: Check out the repository code. This is an official GitHub action.
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Step 2: Set up the Heroku CLI
-      - name: Set up Heroku CLI
-        uses: anmutu/setup-heroku@v1.0.0
-        with:
-          heroku_api_key: ${{ env.HEROKU_API_KEY }}
+      # Step 2: Manually install the Heroku CLI using the official installer.
+      # This step makes our workflow independent of any third-party actions.
+      - name: Install Heroku CLI
+        run: curl https://cli-assets.heroku.com/install.sh | sh
 
       # Step 3: Log in to the Heroku Container Registry
       - name: Log in to Heroku Container Registry
