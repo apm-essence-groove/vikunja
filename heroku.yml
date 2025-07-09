@@ -2,8 +2,8 @@
 
 build:
   docker:
-    web: Dockerfile
-    api: Dockerfile
+    web: Dockerfile.heroku
+    api: Dockerfile.heroku
   config:
     VIKUNJA_BUILD_TARGET: web
     VIKUNJA_API_BUILD_TARGET: api
