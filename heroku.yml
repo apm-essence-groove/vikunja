@@ -6,8 +6,8 @@ build:
     api: Dockerfile.heroku
   config:
     BUILDPLATFORM: linux/amd64
-    # This is the critical new line. It sets the API URL during the build.
-    VITE_VIKUNJA_API_URL: /api/v1 
+    # This new line tells the build what version it is
+    RELEASE_VERSION: $HEROKU_SLUG_COMMIT
 
 run:
   web: npx serve -s /app/vikunja/frontend
