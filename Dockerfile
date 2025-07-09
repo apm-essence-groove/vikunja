@@ -37,7 +37,7 @@ RUN export PATH=$PATH:$GOPATH/bin && \
 #  ┘└┘┘─┘┘└┘┘└┘┴─┘┘└┘
 
 # The actual image
-FROM scratch
+FROM node:22-alpine
 
 LABEL org.opencontainers.image.authors='maintainers@vikunja.io'
 LABEL org.opencontainers.image.url='https://vikunja.io'
@@ -52,6 +52,8 @@ USER 1000
 
 ENV VIKUNJA_SERVICE_ROOTPATH=/app/vikunja/
 ENV VIKUNJA_DATABASE_PATH=/db/vikunja.db
+
+COPY --from=frontendbuilder /build/dist /app/vikunja/frontend
 
 COPY --from=apibuilder /go/src/code.vikunja.io/api/vikunja vikunja
 COPY --from=apibuilder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
