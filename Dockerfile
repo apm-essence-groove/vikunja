@@ -47,7 +47,6 @@ LABEL org.opencontainers.image.licenses='AGPLv3'
 LABEL org.opencontainers.image.title='Vikunja'
 
 WORKDIR /app/vikunja
-ENTRYPOINT [ "/app/vikunja/vikunja" ]
 EXPOSE 3456
 USER 1000
 
