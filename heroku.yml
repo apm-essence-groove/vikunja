@@ -1,0 +1,14 @@
+# heroku.yml - The official instruction manual for Heroku
+
+build:
+  docker:
+    web: Dockerfile
+    api: Dockerfile
+  config:
+    VIKUNJA_BUILD_TARGET: web
+    VIKUNJA_API_BUILD_TARGET: api
+    BUILDPLATFORM: linux/amd64
+
+run:
+  web: npx serve -s /app/vikunja/frontend
+  api: /app/vikunja/vikunja
