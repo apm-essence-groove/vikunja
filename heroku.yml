@@ -1,0 +1,14 @@
+# heroku.yml - Final Version
+
+build:
+  docker:
+    web: Dockerfile.heroku
+    api: Dockerfile.heroku
+  config:
+    BUILDPLATFORM: linux/amd64
+    # This new line tells the build what version it is
+    RELEASE_VERSION: $HEROKU_SLUG_COMMIT
+
+run:
+  web: npx serve -s /app/vikunja/frontend
+  api: /app/vikunja/vikunja
