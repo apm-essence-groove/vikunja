@@ -16,7 +16,7 @@ RUN pnpm install --frozen-lockfile --offline
 COPY frontend/ ./
 RUN	pnpm run build
 
-FROM golang:1.22-alpine AS apibuilder
+FROM golang:1.23-alpine AS apibuilder
 
 RUN go install github.com/magefile/mage@latest && \
     mv /go/bin/mage /usr/local/go/bin
