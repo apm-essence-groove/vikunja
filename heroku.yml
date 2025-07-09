@@ -1,14 +1,13 @@
-# heroku.yml - The final instruction manual for Heroku
+# heroku.yml - Final Version
 
 build:
   docker:
-    web: Dockerfile
-    api: Dockerfile
+    web: Dockerfile.heroku
+    api: Dockerfile.heroku
   config:
-    VIKUNJA_BUILD_TARGET: web
-    VIKUNJA_API_BUILD_TARGET: api
     BUILDPLATFORM: linux/amd64
-    RELEASE_VERSION: $HEROKU_SLUG_COMMIT # <-- The final fix
+    # This is the critical new line. It sets the API URL during the build.
+    VITE_VIKUNJA_API_URL: /api/v1 
 
 run:
   web: npx serve -s /app/vikunja/frontend
