@@ -54,5 +54,5 @@ USER 1000
 ENV VIKUNJA_SERVICE_ROOTPATH=/app/vikunja/
 ENV VIKUNJA_DATABASE_PATH=/db/vikunja.db
 
-COPY --from=apibuilder /build/vikunja-* vikunja
+COPY --from=apibuilder /go/src/code.vikunja.io/api/vikunja vikunja
 COPY --from=apibuilder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
