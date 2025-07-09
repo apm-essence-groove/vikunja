@@ -1,0 +1,13 @@
+build:
+  docker:
+    web: Dockerfile
+    api: Dockerfile
+  config:
+    VIKUNJA_BUILD_TARGET: web
+    VIKUNJA_API_BUILD_TARGET: api
+run:
+  web: npx serve -s
+  api: /app/vikunja/vikunja
+addons:
+  - plan: heroku-postgresql
+    as: DATABASE
