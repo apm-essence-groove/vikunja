@@ -7,35 +7,30 @@ on:
     branches:
       - 'apm-essense-groove-heroku' # Or 'master', depending on your repository's default branch
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   deploy:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Step 1: Check out the repository code
+      # Step 1: Check out the repository code so the workflow can access it
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Step 2: Set environment variables for the Heroku deployment
-      # These are needed by Vikunja and will be set on your Heroku app
-      - name: Set Environment Variables
-        run: |
-          echo "VIKUNJA_DATABASE_TYPE=postgres" >> .env
-          echo "VIKUNJA_SERVICE_FRONTENDURL=https://${{ secrets.HEROKU_APP_NAME }}.herokuapp.com" >> .env
-          echo "VIKUNJA_API_URL=https://${{ secrets.HEROKU_APP_NAME }}.herokuapp.com/api/v1" >> .env
-          echo "VIKUNJA_SERVICE_JWTSECRET=$(openssl rand -hex 32)" >> .env
-
-      # Step 3: Use a pre-built Heroku deployment action
-      # This action logs into Heroku, builds your Docker container, pushes it, and releases it
+      # Step 2: Use the modern, maintained Heroku Docker deployment action
       - name: Build, Push and Release to Heroku
-        uses: ahmadnassri/action-heroku-deploy@v1.0.1
+        uses: gonuit/heroku-docker-deploy@v2.1.2 # This is the new, working action
         with:
+          # Use the secrets you have already configured in your repository settings
+          email: ${{ secrets.HEROKU_EMAIL }}
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-          heroku_email: ${{ secrets.HEROKU_EMAIL }}
-          build_dir: "." # Tell it to look for the Dockerfile in the root
-          env_file: ".env" # Use the .env file we just created
-          use_docker: true
+          
+          # Tell the action where to find the Dockerfile
+          dockerfile_directory: ./
+          dockerfile_name: Dockerfile
+          
+          # Pass all the necessary environment variables directly to Heroku
+          heroku_config_vars: |
+            VIKUNJA_DATABASE_TYPE: postgres
+            VIKUNJA_SERVICE_FRONTENDURL: https://${{ secrets.HEROKU_APP_NAME }}.herokuapp.com
+            VIKUNJA_API_URL: https://${{ secrets.HEROKU_APP_NAME }}.herokuapp.com/api/v1
+            VIKUNJA_SERVICE_JWTSECRET: ${{ secrets.VIKUNJA_SERVICE_JWTSECRET }}
