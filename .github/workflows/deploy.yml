@@ -1,0 +1,41 @@
+# GitHub Action to deploy Vikunja to Heroku using Docker
+name: Deploy to Heroku
+
+# Run this workflow every time a change is pushed to the 'main' branch
+on:
+  push:
+    branches:
+      - 'main' # Or 'master', depending on your repository's default branch
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  deploy:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Step 1: Check out the repository code
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Step 2: Set environment variables for the Heroku deployment
+      # These are needed by Vikunja and will be set on your Heroku app
+      - name: Set Environment Variables
+        run: |
+          echo "VIKUNJA_DATABASE_TYPE=postgres" >> .env
+          echo "VIKUNJA_SERVICE_FRONTENDURL=https://${{ secrets.HEROKU_APP_NAME }}.herokuapp.com" >> .env
+          echo "VIKUNJA_API_URL=https://${{ secrets.HEROKU_APP_NAME }}.herokuapp.com/api/v1" >> .env
+          echo "VIKUNJA_SERVICE_JWTSECRET=$(openssl rand -hex 32)" >> .env
+
+      # Step 3: Use a pre-built Heroku deployment action
+      # This action logs into Heroku, builds your Docker container, pushes it, and releases it
+      - name: Build, Push and Release to Heroku
+        uses: ahmadnassri/action-heroku-deploy@v1.0.1
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          build_dir: "." # Tell it to look for the Dockerfile in the root
+          env_file: ".env" # Use the .env file we just created
+          use_docker: true
