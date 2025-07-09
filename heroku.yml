@@ -1,0 +1,12 @@
+# heroku.yml - The official instruction manual for Heroku
+
+build:
+  docker:
+    web: Dockerfile
+    api: Dockerfile
+  config:
+    VIKUNJA_BUILD_TARGET: web
+    VIKUNJA_API_BUILD_TARGET: api
+run:
+  web: npx serve -s /app/vikunja/frontend # <-- The correct command for the web process
+  api: /app/vikunja/vikunja             # <-- The correct command for the api process
