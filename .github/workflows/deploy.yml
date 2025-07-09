@@ -17,7 +17,7 @@ jobs:
 
       # Step 2: Use the modern, maintained Heroku Docker deployment action
       - name: Build, Push and Release to Heroku
-        uses: gonuit/heroku-docker-deploy@v2.1.2 # This is the new, working action
+        uses: gonuit/heroku-docker-deploy@v2 # CORRECTED LINE
         with:
           # Use the secrets you have already configured in your repository settings
           email: ${{ secrets.HEROKU_EMAIL }}
