@@ -1,13 +1,11 @@
-# The Official Heroku Deployment Workflow - No Third-Party Dependencies
+# The Final Heroku Deployment Workflow for Docker
 name: Deploy to Heroku
 
-# Run this workflow every time a change is pushed to the 'main' branch
 on:
   push:
     branches:
-      - 'apm-essense-groove-heroku' # Or 'master', depending on your repository's default branch
+      - 'apm-essense-groove-heroku'
 
-# These environment variables will be available to all jobs and steps
 env:
   HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
   HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
@@ -16,25 +14,24 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Check out the repository code. This is an official GitHub action.
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Step 2: Manually install the Heroku CLI using the official installer.
-      # This step makes our workflow independent of any third-party actions.
       - name: Install Heroku CLI
         run: curl https://cli-assets.heroku.com/install.sh | sh
 
-      # Step 3: Log in to the Heroku Container Registry
-      - name: Log in to Heroku Container Registry
-        run: heroku container:login
+      - name: Log in to Heroku
+        run: heroku login -i
 
-      # Step 4: Push the Docker images to Heroku
+      # New step to ensure the app is configured for Docker deployments
+      - name: Set the App Stack to Container
+        run: heroku stack:set container --app ${{ env.HEROKU_APP_NAME }}
+
+      # The rest of the steps are the same
       - name: Push Docker images to Heroku
         run: |
           heroku container:push --recursive --arg "VIKUNJA_BUILD_TARGET=web,VIKUNJA_API_BUILD_TARGET=api" --app ${{ env.HEROKU_APP_NAME }}
 
-      # Step 5: Set the configuration variables on your Heroku app
       - name: Set Heroku environment variables
         run: |
           heroku config:set VIKUNJA_DATABASE_TYPE=postgres --app ${{ env.HEROKU_APP_NAME }}
@@ -42,6 +39,5 @@ jobs:
           heroku config:set VIKUNJA_API_URL=https://${{ env.HEROKU_APP_NAME }}.herokuapp.com/api/v1 --app ${{ env.HEROKU_APP_NAME }}
           heroku config:set VIKUNJA_SERVICE_JWTSECRET=${{ secrets.VIKUNJA_SERVICE_JWTSECRET }} --app ${{ env.HEROKU_APP_NAME }}
 
-      # Step 6: Release the new images to run on the app
       - name: Release new images
         run: heroku container:release web api --app ${{ env.HEROKU_APP_NAME }}
