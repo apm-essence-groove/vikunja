@@ -1,15 +1,14 @@
-# heroku.yml - Final Single-Process Version
+# heroku.yml - Final Version with Port Flag
 
 build:
   docker:
-    # We only need to build one process type now
     web: Dockerfile.heroku
+    api: Dockerfile.heroku
   config:
     BUILDPLATFORM: linux/amd64
     RELEASE_VERSION: $HEROKU_SLUG_COMMIT
-    # The frontend build still needs this to know the relative API path
-    VITE_VIKUNJA_API_URL: /api/v1
+    VITE_VIKUNJA_API_URL: /api/v1 
 
 run:
-  # The web dyno now runs the main Vikunja program
-  web: /app/vikunja/vikunja
+  web: npx serve -s /app/vikunja/frontend --listen $PORT
+  api: /app/vikunja/vikunja --service.port $PORT
