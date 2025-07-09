@@ -1,5 +1,5 @@
-# New workflow to deploy using Heroku's native build system
-name: Deploy to Heroku
+# The Bedrock Heroku Deployment Workflow using Git
+name: Deploy to Heroku via Git
 
 on:
   push:
@@ -10,16 +10,36 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Get the code from your repository
+      # Step 1: Check out the code with full git history
       - name: Checkout
         uses: actions/checkout@v4
-
-      # Step 2: Use the official Heroku Deploy action
-      # This action will push your source code to Heroku. Heroku will then
-      # find the heroku.yml file and take over the build and release process.
-      - name: Deploy to Heroku
-        uses: heroku/deploy@v7
         with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          fetch-depth: 0
+
+      # Step 2: Install the Heroku CLI (we know this part works)
+      - name: Install Heroku CLI
+        run: curl https://cli-assets.heroku.com/install.sh | sh
+
+      # Step 3: Create the .netrc file for Git authentication
+      # This file allows Git to log in to Heroku non-interactively.
+      - name: Create .netrc file
+        run: |
+          cat > ~/.netrc <<EOF
+          machine api.heroku.com
+              login ${{ secrets.HEROKU_EMAIL }}
+              password ${{ secrets.HEROKU_API_KEY }}
+          machine git.heroku.com
+              login ${{ secrets.HEROKU_EMAIL }}
+              password ${{ secrets.HEROKU_API_KEY }}
+          EOF
+
+      # Step 4: Add Heroku as a Git remote
+      # This tells Git where your Heroku app's repository is.
+      - name: Add Heroku remote
+        run: heroku git:remote -a ${{ secrets.HEROKU_APP_NAME }}
+
+      # Step 5: Push the code to Heroku to trigger the build
+      # This command pushes your current branch to Heroku's 'main' branch,
+      # forcing an overwrite. Heroku then starts building from your heroku.yml.
+      - name: Push to Heroku
+        run: git push heroku HEAD:main --force
