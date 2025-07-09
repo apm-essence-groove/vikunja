@@ -18,7 +18,8 @@ RUN	pnpm run build
 
 FROM golang:1.23-alpine AS apibuilder
 
-RUN go install github.com/magefile/mage@latest && \
+RUN apk add --no-cache git && \
+    go install github.com/magefile/mage@latest && \
     mv /go/bin/mage /usr/local/go/bin
 
 WORKDIR /go/src/code.vikunja.io/api
