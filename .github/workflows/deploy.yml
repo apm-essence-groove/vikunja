@@ -1,4 +1,4 @@
-# The Final Heroku Deployment Workflow for Docker
+# Web-Only Deployment Workflow for Vikunja
 name: Deploy to Heroku
 
 on:
@@ -20,19 +20,15 @@ jobs:
       - name: Install Heroku CLI
         run: curl https://cli-assets.heroku.com/install.sh | sh
 
-      # THIS STEP IS NEW AND REPLACES THE FAULTY 'heroku login -i'
-      # It logs into the Docker registry specifically, using the API key automatically.
       - name: Log in to Heroku Container Registry
         run: heroku container:login
 
-      # This step ensures the app is configured for Docker deployments
       - name: Set the App Stack to Container
         run: heroku stack:set container --app ${{ env.HEROKU_APP_NAME }}
-
-      # The rest of the steps are the same
-      - name: Push Docker images to Heroku
-        run: |
-          heroku container:push --recursive --arg "VIKUNJA_BUILD_TARGET=web,VIKUNJA_API_BUILD_TARGET=api" --app ${{ env.HEROKU_APP_NAME }}
+        
+      # We now only build and push the WEB image
+      - name: Build and push the WEB image
+        run: heroku container:push web --arg "VIKUNJA_BUILD_TARGET=web" --app ${{ env.HEROKU_APP_NAME }}
 
       - name: Set Heroku environment variables
         run: |
@@ -41,5 +37,6 @@ jobs:
           heroku config:set VIKUNJA_API_URL=https://${{ env.HEROKU_APP_NAME }}.herokuapp.com/api/v1 --app ${{ env.HEROKU_APP_NAME }}
           heroku config:set VIKUNJA_SERVICE_JWTSECRET=${{ secrets.VIKUNJA_SERVICE_JWTSECRET }} --app ${{ env.HEROKU_APP_NAME }}
 
-      - name: Release new images
-        run: heroku container:release web api --app ${{ env.HEROKU_APP_NAME }}
+      # We now only release the 'web' container
+      - name: Release new image
+        run: heroku container:release web --app ${{ env.HEROKU_APP_NAME }}
