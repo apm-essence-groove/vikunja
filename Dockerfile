@@ -18,7 +18,7 @@ RUN	pnpm run build
 
 FROM golang:1.23-alpine AS apibuilder
 
-RUN apk add --no-cache git && \
+RUN apk add --no-cache git docker docker-cli && \
     go install github.com/magefile/mage@latest && \
     mv /go/bin/mage /usr/local/go/bin
 
