@@ -8,6 +8,7 @@ build:
     BUILDPLATFORM: linux/amd64
     # This new line tells the build what version it is
     RELEASE_VERSION: $HEROKU_SLUG_COMMIT
+    VITE_VIKUNJA_API_URL: /api/v1 
 
 run:
 web: npx serve -s /app/vikunja/frontend --listen $PORT
